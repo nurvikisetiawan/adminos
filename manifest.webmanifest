@@ -1,0 +1,9 @@
+{
+  "name": "AdminOS",
+  "short_name": "AdminOS",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f8f6",
+  "theme_color": "#153b35",
+  "description": "Integrated Administration Platform"
+}

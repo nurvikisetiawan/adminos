@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#153b35">
+  <title>AdminOS</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root{--ink:#172b27;--muted:#71817c;--green:#153b35;--mint:#e7f2ed;--line:#e6ece9;--bg:#f5f8f6;--white:#fff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,Segoe UI,sans-serif}
+    button,input{font:inherit} .app{max-width:760px;margin:auto;min-height:100vh;padding-bottom:82px}
+    header{background:var(--green);color:white;padding:22px 18px 26px;border-radius:0 0 24px 24px}
+    .top{display:flex;align-items:center;justify-content:space-between}.brand{font-size:21px;font-weight:800;letter-spacing:.2px}.sub{font-size:12px;opacity:.75;margin-top:3px}
+    .avatar{width:38px;height:38px;border-radius:50%;background:#ffffff22;display:grid;place-items:center;font-weight:700}
+    .welcome{margin-top:25px;font-size:23px;font-weight:750}.welcome small{display:block;font-size:13px;font-weight:400;opacity:.8;margin-top:5px}
+    main{padding:18px}.section-head{display:flex;justify-content:space-between;align-items:center;margin:20px 0 12px}.section-head h2{font-size:16px;margin:0}.muted{color:var(--muted);font-size:12px}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:-2px}.stat,.panel,.module{background:white;border:1px solid var(--line);border-radius:16px;padding:15px}
+    .stat strong{display:block;font-size:24px;margin-top:8px}.stat span{font-size:12px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.module{display:flex;gap:11px;align-items:center;text-align:left;color:var(--ink);width:100%;cursor:pointer}
+    .ico{width:39px;height:39px;border-radius:12px;background:var(--mint);display:grid;place-items:center;font-size:19px;flex:none}
+    .module b{display:block;font-size:13px}.module small{color:var(--muted);font-size:11px}
+    .task{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0}
+    .task input{width:18px;height:18px;accent-color:var(--green)}.task.done span{text-decoration:line-through;color:#9aa6a1}
+    .add{display:flex;gap:8px;margin-top:12px}.add input{min-width:0;flex:1;border:1px solid var(--line);border-radius:11px;padding:12px;background:white}
+    .btn{border:0;background:var(--green);color:white;border-radius:11px;padding:11px 15px;font-weight:650;cursor:pointer}
+    nav{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:3}
+    .navin{width:min(760px,100%);display:flex;justify-content:space-around;padding:9px 5px calc(9px + env(safe-area-inset-bottom))}
+    nav button{border:0;background:none;color:var(--muted);font-size:11px;padding:5px 14px;cursor:pointer}nav button.active{color:var(--green);font-weight:800}
+    nav i{display:block;font-style:normal;font-size:19px;margin-bottom:2px}
+    .page{display:none}.page.active{display:block}.notice{background:#fff8e8;border:1px solid #f2e3bd;color:#76591e;border-radius:13px;padding:12px;font-size:12px;line-height:1.5}
+    .profile-row{padding:13px 0;border-bottom:1px solid var(--line)}.profile-row label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.profile-row input{width:100%;border:1px solid var(--line);padding:11px;border-radius:10px}
+    @media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}.grid{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="top"><div><div class="brand">AdminOS</div><div class="sub">Integrated Administration Platform</div></div><div class="avatar">A</div></div>
+    <div class="welcome">Selamat datang 👋<small id="orgWelcome">Pusat kendali administrasi organisasi</small></div>
+  </header>
+  <main>
+    <section id="home" class="page active">
+      <div class="section-head"><h2>Ringkasan</h2><span class="muted">Demo AdminOS v1</span></div>
+      <div class="stats">
+        <div class="stat"><span>Total tugas</span><strong id="taskCount">0</strong></div>
+        <div class="stat"><span>Tugas selesai</span><strong id="doneCount">0</strong></div>
+        <div class="stat"><span>Modul tersedia</span><strong>8</strong></div>
+        <div class="stat"><span>Status sistem</span><strong style="font-size:17px">Demo</strong></div>
+      </div>
+      <div class="section-head"><h2>Modul utama</h2><span class="muted">Pilih modul</span></div>
+      <div class="grid" id="homeModules"></div>
+      <div class="section-head"><h2>Catatan penting</h2></div>
+      <div class="notice">Ini adalah kerangka awal AdminOS. Data demo disimpan di perangkat ini saja. Belum ada akun sungguhan, server, sinkronisasi, atau penyimpanan data organisasi secara online. Jangan masukkan data rahasia.</div>
+    </section>
+    <section id="modules" class="page">
+      <div class="section-head"><h2>Semua modul</h2></div><div class="grid" id="allModules"></div>
+    </section>
+    <section id="tasks" class="page">
+      <div class="section-head"><h2>Daftar tugas</h2><span class="muted">Tersimpan di perangkat</span></div>
+      <div class="panel"><div id="taskList"></div><div class="add"><input id="newTask" placeholder="Tulis tugas baru..." maxlength="100"><button class="btn" id="addTask">Tambah</button></div></div>
+    </section>
+    <section id="profile" class="page">
+      <div class="section-head"><h2>Profil organisasi</h2></div>
+      <div class="panel">
+        <div class="profile-row"><label>Nama organisasi</label><input id="orgName" value="Organisasi Saya" maxlength="60"></div>
+        <div class="profile-row"><label>Nama pengelola</label><input id="adminName" value="Administrator" maxlength="60"></div>
+        <button class="btn" id="saveProfile" style="margin-top:14px;width:100%">Simpan profil demo</button>
+      </div>
+      <p class="muted">Profil ini hanya tersimpan secara lokal di browser HP.</p>
+    </section>
+    <section id="moduleDetail" class="page">
+      <div class="section-head"><h2 id="detailTitle">Modul</h2></div>
+      <div class="panel"><div class="ico" id="detailIcon">📁</div><h3 id="detailName">Modul AdminOS</h3><p id="detailDesc" class="muted"></p><div class="notice">Modul ini masuk dalam rencana pengembangan. Fitur operasional dan penyimpanan online akan dibuat setelah fondasi akun, organisasi, dan database siap.</div><button class="btn" onclick="showPage('modules')" style="margin-top:14px">Kembali ke modul</button></div>
+    </section>
+  </main>
+</div>
+<nav><div class="navin">
+  <button class="active" data-page="home"><i>⌂</i>Beranda</button>
+  <button data-page="modules"><i>▦</i>Modul</button>
+  <button data-page="tasks"><i>✓</i>Tugas</button>
+  <button data-page="profile"><i>♙</i>Profil</button>
+</div></nav>
+<script>
+const modules=[
+ ['Administrasi','📄','Surat, arsip, disposisi, persetujuan'],
+ ['SDM','👥','Pegawai, kehadiran, cuti, penggajian'],
+ ['Gudang','📦','Persediaan dan pergerakan barang'],
+ ['Keuangan','💳','Kas, anggaran, transaksi, laporan'],
+ ['Perpajakan','🧾','Catatan dan administrasi pajak'],
+ ['Layanan Publik','🏛️','Alur layanan dan permohonan'],
+ ['Proyek & Tugas','📋','Pekerjaan, tenggat, penanggung jawab'],
+ ['Dokumen','🗂️','Penyimpanan dan versi dokumen'],
+ ['AI Assistant','✨','Bantuan ringkasan dan otomatisasi']
+];
+let tasks=JSON.parse(localStorage.getItem('adminos_tasks')||'[]');
+function renderModules(target){document.getElementById(target).innerHTML=modules.map((m,i)=>`<button class="module" onclick="openModule(${i})"><span class="ico">${m[1]}</span><span><b>${m[0]}</b><small>${m[2]}</small></span></button>`).join('')}
+function openModule(i){const m=modules[i];document.getElementById('detailTitle').textContent=m[0];document.getElementById('detailName').textContent=m[0];document.getElementById('detailIcon').textContent=m[1];document.getElementById('detailDesc').textContent=m[2];showPage('moduleDetail')}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo(0,0)}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function saveTasks(){localStorage.setItem('adminos_tasks',JSON.stringify(tasks));renderTasks()}
+function renderTasks(){document.getElementById('taskList').innerHTML=tasks.length?tasks.map((t,i)=>`<div class="task ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i})"><span>${escapeText(t.text)}</span><button aria-label="Hapus" onclick="deleteTask(${i})" style="margin-left:auto;border:0;background:none;color:#a44">Hapus</button></div>`).join(''):'<p class="muted">Belum ada tugas. Tambahkan tugas pertamamu.</p>';document.getElementById('taskCount').textContent=tasks.length;document.getElementById('doneCount').textContent=tasks.filter(t=>t.done).length}
+function escapeText(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toggleTask(i){tasks[i].done=!tasks[i].done;saveTasks()}
+function deleteTask(i){tasks.splice(i,1);saveTasks()}
+document.getElementById('addTask').onclick=()=>{let v=document.getElementById('newTask').value.trim();if(!v)return;tasks.push({text:v,done:false});document.getElementById('newTask').value='';saveTasks()}
+document.getElementById('newTask').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('addTask').click()});
+document.getElementById('saveProfile').onclick=()=>{let org=document.getElementById('orgName').value.trim()||'Organisasi Saya';localStorage.setItem('adminos_org',org);localStorage.setItem('adminos_admin',document.getElementById('adminName').value);document.getElementById('orgWelcome').textContent=org+' · Pusat kendali administrasi';alert('Profil demo tersimpan di perangkat ini.')};
+const savedOrg=localStorage.getItem('adminos_org');if(savedOrg){document.getElementById('orgName').value=savedOrg;document.getElementById('orgWelcome').textContent=savedOrg+' · Pusat kendali administrasi'}if(localStorage.getItem('adminos_admin'))document.getElementById('adminName').value=localStorage.getItem('adminos_admin');
+renderModules('homeModules');renderModules('allModules');renderTasks();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
